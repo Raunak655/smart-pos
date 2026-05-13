@@ -56,4 +56,6 @@ jobs:
       - name: Frontend Build Test
         run: |
           cd frontend
-          npm run build
+          chmod +x node_modules/.bin/vite
+          npx vite build
+         
