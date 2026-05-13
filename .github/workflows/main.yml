@@ -52,24 +52,44 @@ jobs:
 
       # ---------------- FRONTEND ---------------- #
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
 
-        with:
-          node-version: "20"
+      #   with:
+      #     node-version: "20"
 
-      - name: Install Frontend Dependencies
+      # - name: Install Frontend Dependencies
 
-        run: |
+      #   run: |
 
-          cd frontend
+      #     cd frontend
 
-          npm install
+      #     npm install
 
-      - name: Frontend Build Test
+      # - name: Frontend Build Test
 
-        run: |
+      #   run: |
 
-          cd frontend
+      #     cd frontend
 
-          npm run build
+      #     npm run build
+      # ---------------- FRONTEND ----------------
+
+  name: Set up Node.js
+  uses: actions/setup-node@v4
+  with:
+  node-version: "20"
+
+  name: Install frontend dependencies
+  working-directory: frontend
+  run: |
+  rm -rf node_modules package-lock.json
+  npm install
+
+  name: Fix Vite permissions
+  working-directory: frontend
+  run: chmod +x node_modules/.bin/vite
+
+  name: Frontend build test
+  working-directory: frontend
+  run: npm run build
