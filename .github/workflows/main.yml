@@ -45,7 +45,10 @@ jobs:
 
           cd backend
 
-          python -m py_compile app/main.py
+          python -m compileall .
+    
+
+    
 
       # ---------------- FRONTEND ---------------- #
 
