@@ -1,0 +1,2 @@
+SECRET_KEY = "78c2676662ecd23b997cfcc1d34e562ecd34234d3123e6e5cf53088089399e73"
+DB_URL = "mongodb://localhost:27017/"

@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pymongo
+passlib[bcrypt]
+python-jose
+pandas
+numpy
+scikit-learn
+python-dotenv
