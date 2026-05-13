@@ -50,46 +50,56 @@ jobs:
 
     
 
-      # ---------------- FRONTEND ---------------- #
+      #---------------- FRONTEND ---------------- #
 
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
 
-      #   with:
-      #     node-version: "20"
+        with:
+          node-version: "20"
 
-      # - name: Install Frontend Dependencies
+      - name: Install Frontend Dependencies
+        working-directory: frontend
 
-      #   run: |
+        run: |
 
-      #     cd frontend
+          
+          rm -rf node_modules package-lock.json
+          npm install
 
-      #     npm install
+         
+      - name: Fix Vite Permissions
+        working-directory: frontend
+        run: chmod +x node_modules/.bin/vite
 
-      # - name: Frontend Build Test
+        run: chmod +x node_modules/.bin/vite
+      - name: Frontend Build Test
+        working-directory: frontend
 
-      #   run: |
 
-      #     cd frontend
+        run: npm run build
 
-      #     npm run build
+          
       # ---------------- FRONTEND ----------------
 
-  name: Set up Node.js
-  uses: actions/setup-node@v4
-  with:
-  node-version: "20"
+  # ---------------- FRONTEND ----------------
 
-  name: Install frontend dependencies
-  working-directory: frontend
-  run: |
-  rm -rf node_modules package-lock.json
-  npm install
+    #   - name: Set up Node.js
+    #     uses: actions/setup-node@v4
+    # with:
+    #   node-version: "20"
 
-  name: Fix Vite permissions
-  working-directory: frontend
-  run: chmod +x node_modules/.bin/vite
+    #  - name: Install frontend dependencies
+    # working-directory: frontend
+    # run: |
+    #   rm -rf node_modules package-lock.json
+    #   npm install
 
-  name: Frontend build test
-  working-directory: frontend
-  run: npm run build
+  # - name: Fix Vite permissions
+  #   working-directory: frontend
+  #   run: chmod +x node_modules/.bin/vite
+
+  # - name: Frontend build test
+  #   working-directory: frontend
+  #   run: npm run build
+
