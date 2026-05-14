@@ -110,12 +110,16 @@ def create_bill(data: dict, user=Depends(get_current_user)):
 @router.get("/")
 def get_bills(user=Depends(get_current_user)):
 
+    # bills = list(
+    #     sales_collection.find(
+    #         {"created_by": user["email"]},
+    #         {"_id": 0}
+    #     )
+    # )
     bills = list(
-        sales_collection.find(
-            {"created_by": user["email"]},
-            {"_id": 0}
-        )
-    )
+sales_collection.find({}, {"_id": 0})
+)
+
 
     return bills
 #     return bills
