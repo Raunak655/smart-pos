@@ -1,9 +1,11 @@
 fastapi
 uvicorn
-pymongo
+# pymongo
 passlib[bcrypt]
 python-jose
 pandas
 numpy
 scikit-learn
 python-dotenv
+pymongo[srv]==4.7.3
+dnspython==2.7.0
