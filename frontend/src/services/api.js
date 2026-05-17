@@ -1,6 +1,41 @@
 import { products, salesData, topProducts, categoryData, aiSuggestions, demandTrends } from '../data/mockData';
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+console.log("[api] using API_URL:", API_URL);
+
+// Helper to build full URL and log requests
+const buildUrl = (path) => {
+  const base = API_URL.replace(/\/$/, "");
+  const full = path.startsWith("/") ? base + path : base + "/" + path;
+  console.log("[api] request ->", full);
+  return full;
+};
+
+// Wrapper around fetch that returns parsed JSON and better errors
+const fetchJson = async (path, options = {}) => {
+  const url = buildUrl(path);
+  try {
+    const res = await fetch(url, options);
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
+
+    if (!res.ok) {
+      const errMsg = data && data.detail ? data.detail : data && data.error ? data.error : `HTTP ${res.status}`;
+      throw new Error(errMsg);
+    }
+
+    return data;
+  } catch (err) {
+    console.error(`[api] fetch error (${url}):`, err);
+    throw new Error(`Failed to fetch ${url}: ${err.message}`);
+  }
+};
+
+export default API_URL;
+
 
 export const api = {
   // auth: {
@@ -21,43 +56,25 @@ export const api = {
   // },
   auth: {
     login: async (email, password) => {
-      const res = await fetch("http://127.0.0.1:8000/auth/login", {
+      const data = await fetchJson('/auth/login', {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.detail || data.error || "Login failed");
-      }
-
       // Store token and user data
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      if (data?.token) localStorage.setItem("token", data.token);
+      if (data?.user) localStorage.setItem("user", JSON.stringify(data.user));
 
       return data;
     },
 
     signup: async (name, email, password) => {
-      const res = await fetch("http://127.0.0.1:8000/auth/signup", {
+      return await fetchJson('/auth/signup', {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password })
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.detail || data.error || "Signup failed");
-      }
-
-      return data;
     },
 
     // Validate current token and get user data
@@ -69,20 +86,16 @@ export const api = {
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/auth/me", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
+        const data = await fetchJson('/auth/me', {
+          headers: { "Authorization": `Bearer ${token}` }
         });
 
-        if (!res.ok) {
-          // Token is invalid, clear storage
+        if (!data) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           return null;
         }
 
-        const data = await res.json();
         localStorage.setItem("user", JSON.stringify(data));
         return data;
       } catch (error) {
@@ -103,13 +116,9 @@ export const api = {
     getPredictions: async () => {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://127.0.0.1:8000/ml-predictions/", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      return await fetchJson('/ml-predictions/', {
+        headers: { Authorization: `Bearer ${token}` }
       });
-
-      return await res.json();
     }
   },
 
@@ -117,56 +126,33 @@ export const api = {
   getAll: async () => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://127.0.0.1:8000/products", {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-
-    return await res.json();
+    return await fetchJson('/products', { headers: { "Authorization": `Bearer ${token}` } });
   },
 
   add: async (product) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://127.0.0.1:8000/products", {
+    return await fetchJson('/products', {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify(product)
     });
-
-    return await res.json();
   },
 
   update: async (productId, product) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://127.0.0.1:8000/products/${productId}`, {
+    return await fetchJson(`/products/${productId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify(product)
     });
-
-    return await res.json();
   },
 
   delete: async (productId) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://127.0.0.1:8000/products/${productId}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-
-    return await res.json();
+    return await fetchJson(`/products/${productId}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
   }
 },
 
@@ -181,7 +167,7 @@ export const api = {
 //   const token = localStorage.getItem("token");
 
 //   const res = await fetch(
-//     "http://127.0.0.1:8000/analytics/",
+//     "${API_URL}/analytics/",
 //     {
 //       headers: {
 //         "Authorization": `Bearer ${token}`
@@ -207,16 +193,7 @@ analytics: {
 
   const token = localStorage.getItem("token");
 
-  const res = await fetch(
-    "http://127.0.0.1:8000/analytics/",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
-
-  return await res.json();
+  return await fetchJson('/analytics/', { headers: { Authorization: `Bearer ${token}` } });
 },
 
   getCategoryDistribution: async () => {
@@ -238,16 +215,7 @@ analytics: {
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      "http://127.0.0.1:8000/analytics/",
-      {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      }
-    );
-
-    return await res.json();
+    return await fetchJson('/analytics/', { headers: { "Authorization": `Bearer ${token}` } });
   },
 
 },
@@ -257,16 +225,7 @@ aiSuggestions: {
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      "http://127.0.0.1:8000/ai-suggestions/",
-      {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      }
-    );
-
-    return await res.json();
+    return await fetchJson('/ai-suggestions/', { headers: { "Authorization": `Bearer ${token}` } });
   }
 
 },
@@ -276,33 +235,18 @@ aiSuggestions: {
 
   const token = localStorage.getItem("token");
 
-  const res = await fetch("http://127.0.0.1:8000/billing/", {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
-  });
-
-  return await res.json();
+  return await fetchJson('/billing/', { headers: { "Authorization": `Bearer ${token}` } });
 },
 
   generateBill: async (billData) => {
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://127.0.0.1:8000/billing", {
+    const data = await fetchJson('/billing', {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify(billData)
     });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.detail || data.error || "Failed to save bill");
-    }
 
     return data;
   },
@@ -311,7 +255,7 @@ aiSuggestions: {
 };
 // const token = localStorage.getItem("token");
 
-// fetch("http://127.0.0.1:8000/protected-route", {
+// fetch("${API_URL}/protected-route", {
 //   headers: {
 //     "Authorization": `Bearer ${token}`
 //   }
