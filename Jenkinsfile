@@ -9,7 +9,8 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/anshikasinghhh/pos-system'
+                git branch: 'main',
+                    url: 'https://github.com/anshikasinghhh/pos-system'
             }
         }
 
