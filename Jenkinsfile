@@ -23,9 +23,17 @@ pipeline {
             }
         }
 
+        stage('Backend Setup') {
+            steps {
+                dir('backend') {
+                    sh 'pip3 install -r requirements.txt'
+                }
+            }
+        }
+
         stage('Done') {
             steps {
-                echo 'SmartPOS CI Pipeline Successful!'
+                echo 'SmartPOS Full CI Successful!'
             }
         }
     }
