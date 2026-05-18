@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'NodeJS'
+    }
+
+    stages {
+
+        stage('Clone') {
+            steps {
+                git 'https://github.com/anshikasinghhh/pos-system.git'
+            }
+        }
+
+        stage('Frontend Build') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Done') {
+            steps {
+                echo 'Frontend Build Successful!'
+            }
+        }
+    }
+}
