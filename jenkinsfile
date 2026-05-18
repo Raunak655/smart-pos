@@ -9,7 +9,7 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/anshikasinghhh/pos-system.git'
+                git 'https://github.com/anshikasinghhh/pos-system'
             }
         }
 
