@@ -39,7 +39,7 @@ export default function Login({ onLogin, onGoSignup }) {
 
         {/* Card */}
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-xl font-semibold text-white mb-1">Welcome back to SmartPOS</h2>
+          <h2 className="text-xl font-semibold text-white mb-1">Welcome back to SmartPOS Store</h2>
           <p className="text-slate-400 text-sm mb-6">Sign in to your dashboard</p>
 
           {error && (
