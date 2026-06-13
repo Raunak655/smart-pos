@@ -1,4 +1,6 @@
 import { useState } from "react";
+// import axios from "axios";
+// import { useNavigate } from "react-router-dom";
 
 export default function Login({ onLogin, onGoSignup }) {
   const [email, setEmail] = useState("");
@@ -6,19 +8,78 @@ export default function Login({ onLogin, onGoSignup }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPass, setShowPass] = useState(false);
+  // const navigate = useNavigate();
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   setLoading(true);
+  //   try {
+  //     await onLogin(email, password);
+  //   } catch (err) {
+  //     setError(err.message || "Login failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await onLogin(email, password);
-    } catch (err) {
-      setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+  e.preventDefault();
+
+  setError("");
+  setLoading(true);
+
+  try {
+        await onLogin(email, password);
+
+
+    // const response = await axios.post(
+    //   "http://127.0.0.1:8000/auth/login",
+    //   {
+    //     email,
+    //     password
+    //   }
+    // );
+
+    // // Save token
+
+    // localStorage.setItem(
+    //   "token",
+    //   response.data.token
+    // );
+
+    // // Save user
+
+    // localStorage.setItem(
+    //   "user",
+    //   JSON.stringify(response.data.user)
+    // );
+
+    // // Role-based navigation
+
+    // // if(response.data.user.role === "admin"){
+
+    // //   navigate("/admin");
+
+    // // } else {
+
+    // //   navigate("/dashboard");
+
+    // // }
+    
+
+  } catch (err) {
+
+    setError(
+      err.response?.data?.detail || "Login failed"
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">

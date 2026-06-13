@@ -22,4 +22,4 @@ sample_products = [
 ]
 
 products_collection.insert_many(sample_products)
-print(f"✅ Seeded {len(sample_products)} products successfully!")
+print(f"Seeded {len(sample_products)} products successfully!")

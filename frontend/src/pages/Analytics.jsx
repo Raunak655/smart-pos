@@ -22,10 +22,10 @@ const URGENCY = {
   low: { cls: "bg-blue-500/15 border-blue-500/30 text-blue-400", badge: "bg-blue-500", label: "Low" },
 };
 
-export default function Analytics() {
+export default function Analytics({ analytics }) {
   // const [sales, setSales] = useState([]);
   // const [trends, setTrends] = useState([]);
-  const [analytics, setAnalytics] = useState(null);
+  // const [analytics, setAnalytics] = useState(null);
   // const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
   // const [dismissedIds, setDismissedIds] = useState([]);
@@ -41,18 +41,48 @@ export default function Analytics() {
   //     // setSuggestions(ai);
   //   }).finally(() => setLoading(false));
   // }, []);
-  useEffect(() => {
+//   useEffect(() => {
 
-  api.analytics.getAnalytics()
-    .then((data) => {
+//   api.analytics.getAnalytics()
+//     .then((data) => {
 
-      setAnalytics(data);
+//       setAnalytics(data);
 
-    })
-    .finally(() => setLoading(false));
+//     })
+//     .finally(() => setLoading(false));
 
-}, []);
+// }, []);
+// useEffect(() => {
 
+//   const loadAnalytics = async () => {
+//     try {
+//       const data = await api.analytics.getAnalytics();
+
+//       setAnalytics(data);
+
+//     } catch (err) {
+//       console.error(err);
+//     } finally {
+
+//       setTimeout(() => {
+//         setLoading(false);
+//       }, 500);
+
+//     }
+//   };
+
+//   loadAnalytics();
+
+// }, []);
+useEffect(() => {
+
+  if (analytics) {
+
+    setLoading(false);
+
+  }
+
+}, [analytics]);
   // const totalProfit = sales.reduce((s, d) => s + d.profit, 0);
   // const totalSales = sales.reduce((s, d) => s + d.sales, 0);
   const totalSales = analytics?.total_revenue || 0;

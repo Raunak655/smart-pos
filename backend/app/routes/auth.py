@@ -29,7 +29,9 @@ def signup(user: UserSignup):
     users_collection.insert_one({
         "name": user.name,
         "email": user.email,
-        "password": hash_password(user.password)
+        "password": hash_password(user.password),
+        "role": user.role
+
     })
 
     return {
@@ -56,13 +58,15 @@ def login(user: UserLogin):
             detail="Invalid email or password"
         )
 
-    token = create_token({"email": user.email})
+    token = create_token({"email": user.email, "role": db_user["role"]})
 
     return {
         "token": token,
         "user": {
             "email": db_user["email"],
             "name": db_user["name"],
+            "role": db_user["role"]
+
         },
         "success": True
     }
@@ -82,5 +86,6 @@ def get_user(user=Depends(get_current_user)):
     return {
         "email": db_user["email"],
         "name": db_user["name"],
+        "role": db_user["role"],
         "success": True
     }

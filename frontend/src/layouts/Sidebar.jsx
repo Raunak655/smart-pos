@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const navItems = [
+const adminNavItems = [
   { id: "dashboard", label: "Dashboard", icon: "📊" },
   { id: "billing", label: "Billing", icon: "🧾" },
   { id: "inventory", label: "Inventory", icon: "📦" },
@@ -17,9 +17,19 @@ const navItems = [
   icon: "📈"
 },
 ];
+const customerNavItems = [
+  { id: "dashboard", label: "Dashboard", icon: "📊" },
+  { id: "billing", label: "My Orders", icon: "🛒" },
+  { id: "profile", label: "Profile", icon: "👤" },
+];
 
 export default function Sidebar({ activePage, onNavigate, onLogout, user, aiSuggestionCount }) {
   const [collapsed, setCollapsed] = useState(false);
+  // const navItems =
+  // user?.role === "admin"
+  //   ? adminNavItems
+  //   : customerNavItems;
+  const navItems = adminNavItems;
 
   return (
     <aside className={`${collapsed ? "w-20" : "w-64"} transition-all duration-300 bg-slate-900 border-r border-white/5 flex flex-col h-screen sticky top-0 z-30`}>

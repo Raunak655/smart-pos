@@ -14,12 +14,12 @@ import Sidebar from "./layouts/Sidebar";
 import Navbar from "./components/Navbar";
 import Predictions from "./pages/Predictions";
 
-
-export default function App() {
+export default function App()  {
   const [authPage, setAuthPage] = useState("login"); // "login" | "signup"
   const [user, setUser] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
   const [aiSuggestionCount, setAISuggestionCount] = useState(0);
+  const [analyticsData, setAnalyticsData] = useState(null);
   const [isValidating, setIsValidating] = useState(true);
 
   // Check if user is already logged in on mount
@@ -50,11 +50,51 @@ export default function App() {
 
     loadAISuggestionCount();
   }, [user]);
+  useEffect(() => {
 
-  const handleLogin = async (email, password) => {
-    const res = await api.auth.login(email, password);
-    setUser(res.user);
+  if (!user) return;
+
+  const loadAnalytics = async () => {
+    try {
+
+      const data = await api.analytics.getAnalytics();
+
+      setAnalyticsData(data);
+
+    } catch (err) {
+
+      console.error("Failed to load analytics:", err);
+
+    }
   };
+
+  loadAnalytics();
+
+}, [user]);
+
+  // const handleLogin = async (email, password) => {
+  //   const res = await api.auth.login(email, password);
+  //   setUser(res.user);
+  // };
+  const handleLogin = async (email, password) => {
+
+    const res = await api.auth.login(email, password);
+
+    setUser(res.user);
+    setActivePage("dashboard");
+
+    // Role-based default page
+
+    // if(res.user.role === "admin"){
+
+    //     setActivePage("dashboard");
+
+    // } else {
+
+    //     setActivePage("billing");
+
+    // }
+};
 
   const handleSignup = async (name, email, password) => {
     await api.auth.signup(name, email, password);
@@ -87,16 +127,41 @@ export default function App() {
       : <Signup onSignup={handleSignup} onGoLogin={() => setAuthPage("login")} />;
   }
 
+  // const pages = {
+  //   dashboard: Dashboard,
+  //   billing: Billing,
+  //   inventory: Inventory,
+  //   analytics: Analytics,
+  //   profile: Profile,
+  //   sales: SalesHistory,
+  //   predictions: Predictions,
+  //   "ai-suggestions": () => <AISuggestions onCountChange={setAISuggestionCount} />
+  // };
   const pages = {
-    dashboard: Dashboard,
-    billing: Billing,
-    inventory: Inventory,
-    analytics: Analytics,
-    profile: Profile,
-    sales: SalesHistory,
-    predictions: Predictions,
-    "ai-suggestions": () => <AISuggestions onCountChange={setAISuggestionCount} />
-  };
+
+  dashboard: () => (
+    <Dashboard analytics={analyticsData} />
+  ),
+
+  billing: Billing,
+
+  inventory: Inventory,
+
+  analytics: () => (
+    <Analytics analytics={analyticsData} />
+  ),
+
+  profile: Profile,
+
+  sales: SalesHistory,
+
+  predictions: Predictions,
+
+  "ai-suggestions": () => (
+    <AISuggestions onCountChange={setAISuggestionCount} />
+  )
+
+};
 
   const PageComponent = pages[activePage] || Dashboard;
 

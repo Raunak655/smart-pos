@@ -21,13 +21,13 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export default function Dashboard() {
+export default function Dashboard({ analytics })  {
   // const [summary, setSummary] = useState(null);
   // const [sales, setSales] = useState([]);
   // const [topProducts, setTopProducts] = useState([]);
   // const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [analytics, setAnalytics] = useState(null);
+  // const [analytics, setAnalytics] = useState(null);
 
   // useEffect(() => {
   //   const load = async () => {
@@ -48,17 +48,26 @@ export default function Dashboard() {
   //   };
   //   load();
   // }, []);
+// useEffect(() => {
+
+//   api.analytics.getAnalytics()
+//     .then((data) => {
+
+//       setAnalytics(data);
+
+//     })
+//     .finally(() => setLoading(false));
+
+// }, []);
 useEffect(() => {
 
-  api.analytics.getAnalytics()
-    .then((data) => {
+  if (analytics) {
 
-      setAnalytics(data);
+    setLoading(false);
 
-    })
-    .finally(() => setLoading(false));
+  }
 
-}, []);
+}, [analytics]);
   
   // const stats = summary ? [
   //   { label: "Total Sales", value: `₹${(summary.totalSales / 1000).toFixed(1)}K`, icon: "💰", color: "indigo", change: 12.4 },

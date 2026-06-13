@@ -166,3 +166,15 @@ else:
     users_collection = InMemoryCollection()
     products_collection = InMemoryCollection()
     sales_collection = InMemoryCollection()
+
+    class InMemoryDb:
+        def __getitem__(self, name):
+            if name == "users":
+                return users_collection
+            elif name == "products":
+                return products_collection
+            elif name == "sales":
+                return sales_collection
+            return InMemoryCollection()
+    db = InMemoryDb()
+
